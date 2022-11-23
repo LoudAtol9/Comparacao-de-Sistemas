@@ -338,35 +338,4 @@ class Sistema :
         for i in range(self.TAM):
             self.resultado_k[i] = resultado_copy[self.orientacao_k[i]]
     
-
-
-
-if __name__ == '__main__':
-
-    matriz_teste = [[4, 2, -2], [4, 9, -3], [-2, -2, 7]]
-    matriz_resposta = [32, 12, 54]
-    '''
-    a_1 = [120.38158571733415, 141.54975249792912, 241.69429329049854, 76.59547082168734]
-    a_2 = [-12.5118711511782517, -74.61197904131627, 54.43228232471596, 339.61488082023226]
-    a_3 = [88.01357967124741, -97.51292399381236, -20.200157832766088, -13.177680693895699]
-    a_4 = [-4.885469891327593, -70.04167305353975, -73.34399997778047, -43.480063513636054]
-    a1 = [ 10.881199678554246, -28.71588575171946, 65.96536735332967, -353.1741403677117]
-    a = [a_1, a_2, a_3, a_4]
-    '''
-    b = [[7,-2],[7,-2]]
-    b1 = [2,5]
-
-    print(numpy.linalg.det(b))
-
-    sist = Sistema(matriz_teste, matriz_resposta, 64)
-    sist2 = Sistema(matriz_teste, matriz_resposta, 16)
-
-    print(sist.matriz_exp)
     
-    sist.met_gauss_seidel()
-    sist2.met_pivotagem_completa()
-    sist.calculo_erro_relativo()
-
-    print(sist.resultado_k)
-    print(sist.erro) 
-    print(sist2.resultado_k)
