@@ -304,29 +304,26 @@ class Sistema :
 
 
 
-    """
+
     # Metodo Gauss-Seidel
     def met_gauss_seidel(self) :
 
-        resultado_k1 = [numpy.float16(1)] * (self.TAM) # x(k+1)
-        soma = numpy.float16(0) # soma de x(k+1) e x(k)
+        resultado_k1 = [0] * (self.TAM) # x(k+1)
+        soma = 0 # soma de x(k+1) e x(k)
 
         continuar = True
 
-        for i in range(self.TAM) :
-            self.matriz_sort_coluna(i)
-
         while (continuar and self.it_atual < self.it_max):
-            for i in range(self.TAM) :
-                soma = numpy.float16(0)
+            for i in range(self.TAM):
+
+                resultado_k1[i] = self.matriz_exp[self.TAM - 1][i]/self.matriz_exp[i][i]
+                soma = 0
 
                 for j in range(self.TAM) :
-                    soma += self.matriz_exp[i][j] * resultado_k1[j]
-
-                for j in range(i+1, self.TAM) :
-                    soma +=  self.matriz_exp[i][j] * self.resultado_k[j]
-
-                resultado_k1[i] += self.norm_n(1/self.matriz_exp[i][i]) * (self.matriz_exp[i][self.TAM] - soma)
+                    if(j<i): soma += self.matriz_exp[i][j] * resultado_k1[j]
+                    if(j>i): soma +=  self.matriz_exp[i][j] * self.resultado_k[j]
+                    
+                resultado_k1[i] -= soma/self.matriz_exp[i][i]
 
             #for i in range(self.TAM) :
             #    if abs(self.resultado_k[i] - resultado_k1[i]) < self.E_tol:
@@ -340,34 +337,36 @@ class Sistema :
         resultado_copy = copy.deepcopy(self.resultado_k)
         for i in range(self.TAM):
             self.resultado_k[i] = resultado_copy[self.orientacao_k[i]]
-    """
+    
 
 
 
 if __name__ == '__main__':
 
-    #matriz_teste = [[2, 3, 4], [5, 8, 1], [9, 2, 5]]
-    #matriz_resposta = [32, 12, 54]
+    matriz_teste = [[4, 2, -2], [4, 9, -3], [-2, -2, 7]]
+    matriz_resposta = [32, 12, 54]
+    '''
     a_1 = [120.38158571733415, 141.54975249792912, 241.69429329049854, 76.59547082168734]
     a_2 = [-12.5118711511782517, -74.61197904131627, 54.43228232471596, 339.61488082023226]
     a_3 = [88.01357967124741, -97.51292399381236, -20.200157832766088, -13.177680693895699]
     a_4 = [-4.885469891327593, -70.04167305353975, -73.34399997778047, -43.480063513636054]
     a1 = [ 10.881199678554246, -28.71588575171946, 65.96536735332967, -353.1741403677117]
     a = [a_1, a_2, a_3, a_4]
+    '''
     b = [[7,-2],[7,-2]]
     b1 = [2,5]
 
     print(numpy.linalg.det(b))
 
-    sist = Sistema(b, b1, 64)
-    #sist2 = Sistema(a, a1, 16)
+    sist = Sistema(matriz_teste, matriz_resposta, 64)
+    sist2 = Sistema(matriz_teste, matriz_resposta, 16)
 
     print(sist.matriz_exp)
     
-    sist.met_pivotagem_parcial()
-    #sist2.met_pivotagem_completa()
+    sist.met_gauss_seidel()
+    sist2.met_pivotagem_completa()
     sist.calculo_erro_relativo()
 
     print(sist.resultado_k)
     print(sist.erro) 
-    #print(sist2.resultado_k)
+    print(sist2.resultado_k)

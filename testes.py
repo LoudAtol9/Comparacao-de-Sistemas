@@ -1,7 +1,5 @@
-import pytest
 import numpy
 import math
-import prettytable
 import time
 import random
 import copy
