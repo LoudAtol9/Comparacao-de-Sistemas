@@ -198,6 +198,48 @@ class Sistema :
         self.orientacao_k[inicio] , self.orientacao_k[max_x] = self.orientacao_k[max_x] , self.orientacao_k[inicio]
                 
 
+    # Function to find the partition position
+    def partition(self, array, linha, low, high):
+    
+        # choose the rightmost element as pivot
+        pivot = array[high][linha]
+    
+        # pointer for greater element
+        i = low - 1
+    
+        # traverse through all elements
+        # compare each element with pivot
+        for j in range(low, high):
+            if array[j][linha] >= self.modulo(pivot):
+            
+                # If element smaller than pivot is found
+                # swap it with the greater element pointed by i
+                i = i + 1
+    
+                # Swapping element at i with element at j
+                (array[i], array[j]) = (copy.deepcopy(array[j]), copy.deepcopy(array[i]))
+    
+        # Swap the pivot element with the greater element specified by i
+        (array[i + 1], array[high]) = (copy.deepcopy(array[high]), copy.deepcopy(array[i + 1]))
+    
+        # Return the position from where partition is done
+        return i + 1
+    
+    # function to perform quicksort 
+    def quickSort_2linhas(self, linha, low, high):
+        if low < high:
+        
+            # Find pivot element such that
+            # element smaller than pivot are on the left
+            # element greater than pivot are on the right
+            pi = self.partition(self.matriz_exp, linha, low, high)
+    
+            # Recursive call on the left of pivot
+            self.quickSort_2linhas(linha, low, pi - 1)
+    
+            # Recursive call on the right of pivot
+            self.quickSort_2linhas(linha, pi + 1, high)
+
 
 
     # Eliminacao de Gauss com Pivotagem Parcial
@@ -207,7 +249,7 @@ class Sistema :
         for j in range((self.TAM + 1) - 2) :
 
             # Pivotagem Parcial
-            self.matriz_sort_linha(j)
+            self.quickSort_2linhas(j, j, self.TAM - 1)
 
             # cria e armazena o pivo na casa correspondente a iteracao
             for i in range(j + 1,(self.TAM)):
@@ -242,7 +284,7 @@ class Sistema :
 
             # Pivotagem Parcial
             self.matriz_sort_completa(j)
-            self.matriz_sort_linha(j)
+            self.quickSort_2linhas(j, j, self.TAM - 1)
 
             # cria e armazena o pivo na casa correspondente a iteracao
             for i in range(j + 1,(self.TAM)):
@@ -291,7 +333,7 @@ class Sistema :
 
         # Ordena a Matriz Diagonal Dominante
         for i in range(self.TAM) :
-            self.matriz_sort_linha(i)
+            self.quickSort_2linhas(i, i, self.TAM - 1)
 
         # Itera enquanto estiver fora da margem de erro e menor que a qnt max
         while (continuar and self.it_atual < self.it_max):
@@ -329,8 +371,8 @@ class Sistema :
 
 if __name__ == '__main__':
 
-    matriz_teste = [[10, -1, 2, 0], [-1, 11, -1, 3], [2, -1, 10, -1], [0, 3, -1, 8]]
-    matriz_resposta = [6, 25, -11, 15]
+    matriz_teste = [[2, -1, 10, -1], [0, 3, -1, 8], [10, -1, 2, 0], [-1, 11, -1, 3]]
+    matriz_resposta = [-11, 15, 6, 25]
 
     sist = Sistema(matriz_teste, matriz_resposta, 16)
     print(sist.matriz_exp)
