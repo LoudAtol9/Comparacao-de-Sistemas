@@ -21,7 +21,7 @@ class Sistema :
         self.bits = bits     # num de bits usados  
         self.it_max = 1000   # num max de iteracoes 
         self.it_atual = 0    # contador de iteracoes
-        self.E_tol = 0.00001 # precisao, tolerancia
+        self.E_tol = 0.0001 # precisao, tolerancia
 
         self.norm_nxn()
 
@@ -271,71 +271,69 @@ class Sistema :
         resultado_copy = copy.deepcopy(self.resultado_k)
         for i in range(self.TAM):
             self.resultado_k[self.orientacao_k[i]] = resultado_copy[i]
-
-
-
-
-    # Metodo Gauss-Jacob
-    def met_gauss_jacob(self) :
-
-        resultado_k1 = [numpy.float16(0)] * (self.TAM) # x(k+1)
-        soma = numpy.float16(0) # soma de x(k)
-
-        continuar = True
-
-        for i in range(self.TAM) :
-            self.matriz_sort_linha(i)
-
-        while (continuar and self.it_atual < self.it_max):
-            for i in range(self.TAM) :
-                soma = numpy.float16(0)
-
-                for j in range(0, self.TAM) :
-                    if j != i :
-                        soma += self.matriz_exp[i][j] * self.resultado_k[j]
-
-                resultado_k1[i] = self.norm_n(1/self.matriz_exp[i][i]) * (self.matriz_exp[i][self.TAM] - soma)
-
-
-            self.resultado_k = copy.deepcopy(resultado_k1)
-
-            self.it_atual += 1
         
 
-
+    # Retorna o módulo de um número
+    def modulo(self, i):
+        if i < 0:
+            return -i
+        if i >= 0:
+            return i
 
 
     # Metodo Gauss-Seidel
     def met_gauss_seidel(self) :
 
-        resultado_k1 = [0] * (self.TAM) # x(k+1)
-        soma = 0 # soma de x(k+1) e x(k)
+        resultado_k1 = [self.norm_n(0)] * (self.TAM) # x(k+1)
+        soma = self.norm_n(0) # soma de x(k+1) e x(k)
 
         continuar = True
 
+        # Ordena a Matriz Diagonal Dominante
+        for i in range(self.TAM) :
+            self.matriz_sort_linha(i)
+
+        # Itera enquanto estiver fora da margem de erro e menor que a qnt max
         while (continuar and self.it_atual < self.it_max):
+
+            # Percorre a coluna e reinicia o valor da soma
             for i in range(self.TAM):
+                soma = self.norm_n(0)
 
-                resultado_k1[i] = self.matriz_exp[self.TAM - 1][i]/self.matriz_exp[i][i]
-                soma = 0
-
-                for j in range(self.TAM) :
-                    if(j<i): soma += self.matriz_exp[i][j] * resultado_k1[j]
-                    if(j>i): soma +=  self.matriz_exp[i][j] * self.resultado_k[j]
+                # Percorre linha, se for resposta adiciona, se for normal subtrai
+                for j in range(self.TAM + 1) :
+                    if (j == self.TAM):
+                        soma += self.matriz_exp[i][j]
+                    elif(j<i): 
+                        soma -= self.matriz_exp[i][j] * resultado_k1[j]
+                    elif(j>i): 
+                        soma -=  self.matriz_exp[i][j] * self.resultado_k[j]
                     
-                resultado_k1[i] -= soma/self.matriz_exp[i][i]
+                resultado_k1[i] = self.norm_n(soma/self.matriz_exp[i][i])
 
-            #for i in range(self.TAM) :
-            #    if abs(self.resultado_k[i] - resultado_k1[i]) < self.E_tol:
-            #        continuar = False
+            # Verifica se o valor esta dentro da margem de erro
+            for i in range(self.TAM) :
+                if self.modulo(self.resultado_k[i] - resultado_k1[i]) < self.norm_n(self.E_tol):
+                    continuar = False
 
+            # Passa o valor de k1 para k, iniciando outra iteracao
             self.resultado_k = copy.deepcopy(resultado_k1)
 
             self.it_atual += 1
 
-        # reordena o resultado
+        # reordena o resultado caso tenha ordenado a matriz
         resultado_copy = copy.deepcopy(self.resultado_k)
         for i in range(self.TAM):
             self.resultado_k[i] = resultado_copy[self.orientacao_k[i]]
     
-    
+
+if __name__ == '__main__':
+
+    matriz_teste = [[10, -1, 2, 0], [-1, 11, -1, 3], [2, -1, 10, -1], [0, 3, -1, 8]]
+    matriz_resposta = [6, 25, -11, 15]
+
+    sist = Sistema(matriz_teste, matriz_resposta, 16)
+    print(sist.matriz_exp)
+    sist.met_gauss_seidel()
+    print(sist.resultado_k)
+    print(sist.resultado_preciso)
