@@ -54,7 +54,7 @@ class Tabela:
 
 
     def add_linha_secundaria(self, tipo, tempo, erro, NaN, erro2):
-        self.table += self.lst_metodos(tipo) + str("{:12e}".format(tempo)) + " | " + str("{:12e}".format(erro)) + "% |       " + str("{:5}".format(NaN)) + "         | " + str("{:12e}".format(erro2)) + "  |\n"
+        self.table += self.lst_metodos(tipo) + str("{:12e}".format(tempo)) + " | " + str("{:12e}".format(erro)) + "% |       " + str("{:5}".format(NaN)) + "         | " + str("{:12e}".format(erro2)) + "% |\n"
 
 
 class TestClass:
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     complexidade = int(input("Digite o range dos números sorteados (0 - 3): "))
     tam = int(input("Digite o tamanho da Matriz: "))
     bits = int(input("Digite em qnts Bits será a precisão (16 - 32 - 64): "))
-    
+
     y = TestClass(iteracoes)
     f = open("output.txt", 'w')
     table = Tabela()
@@ -278,7 +278,7 @@ if __name__ == '__main__':
         y.test_one(table, a, a1, complexidade, i + 1, bits)
         y.test_two(table, a, a1,complexidade, i + 1, bits)
         y.test_three(table, a, a1, complexidade, i + 1, bits)
-        y.test_four(table, a, a1, complexidade, i + 1, bits)
+        #y.test_four(table, a, a1, complexidade, i + 1, bits)
 
         if i % (iteracoes / 100) == 0 and i != 0:
             f.write(table.table)
@@ -291,7 +291,7 @@ if __name__ == '__main__':
     table.add_linha_secundaria(1, y.tempo_media_elim, y.erro_max_media_elim, y.NaN_elim, y.erro_max_media_NaN_elim/(iteracoes - y.NaN_elim))
     table.add_linha_secundaria(2, y.tempo_media_parc, y.erro_max_media_parc, y.NaN_parc, y.erro_max_media_NaN_parc/(iteracoes - y.NaN_parc))
     table.add_linha_secundaria(3, y.tempo_media_comp, y.erro_max_media_comp, y.NaN_comp, y.erro_max_media_NaN_comp/(iteracoes - y.NaN_comp))
-    table.add_linha_secundaria(4, y.tempo_media_jacob, y.erro_max_media_jacob, y.NaN_jacob, y.erro_max_media_NaN_jacob/(iteracoes - y.NaN_jacob))
+    #table.add_linha_secundaria(4, y.tempo_media_jacob, y.erro_max_media_jacob, y.NaN_jacob, y.erro_max_media_NaN_jacob/(iteracoes - y.NaN_jacob))
     table.add_sepracao_secundaria()
     f.write(table.table)
     f.close

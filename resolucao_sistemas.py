@@ -1,5 +1,6 @@
 import numpy
 import copy
+import math
 
 class Sistema :
 
@@ -209,16 +210,18 @@ class Sistema :
     
         # traverse through all elements
         # compare each element with pivot
-        for j in range(low, high):
-            if array[j][linha] >= self.modulo(pivot):
-            
-                # If element smaller than pivot is found
-                # swap it with the greater element pointed by i
-                i = i + 1
-    
-                # Swapping element at i with element at j
-                (array[i], array[j]) = (copy.deepcopy(array[j]), copy.deepcopy(array[i]))
-    
+        try:
+            for j in range(low, high):
+                if array[j][linha] >= self.modulo(pivot):
+                
+                    # If element smaller than pivot is found
+                    # swap it with the greater element pointed by i
+                    i = i + 1
+
+                    # Swapping element at i with element at j
+                    (array[i], array[j]) = (copy.deepcopy(array[j]), copy.deepcopy(array[i]))
+        except TypeError:
+            return float("NaN")
         # Swap the pivot element with the greater element specified by i
         (array[i + 1], array[high]) = (copy.deepcopy(array[high]), copy.deepcopy(array[i + 1]))
     
@@ -233,6 +236,7 @@ class Sistema :
             # element smaller than pivot are on the left
             # element greater than pivot are on the right
             pi = self.partition(self.matriz_exp, linha, low, high)
+            if math.isnan(pi): return float
     
             # Recursive call on the left of pivot
             self.quickSort_2linhas(linha, low, pi - 1)
@@ -249,7 +253,7 @@ class Sistema :
         for j in range((self.TAM + 1) - 2) :
 
             # Pivotagem Parcial
-            self.quickSort_2linhas(j, j, self.TAM - 1)
+            self.matriz_sort_linha(j)
 
             # cria e armazena o pivo na casa correspondente a iteracao
             for i in range(j + 1,(self.TAM)):
@@ -284,7 +288,7 @@ class Sistema :
 
             # Pivotagem Parcial
             self.matriz_sort_completa(j)
-            self.quickSort_2linhas(j, j, self.TAM - 1)
+            self.matriz_sort_linha(j)
 
             # cria e armazena o pivo na casa correspondente a iteracao
             for i in range(j + 1,(self.TAM)):
@@ -328,12 +332,16 @@ class Sistema :
 
         resultado_k1 = [self.norm_n(0)] * (self.TAM) # x(k+1)
         soma = self.norm_n(0) # soma de x(k+1) e x(k)
-
+        suma = 0
         continuar = True
 
         # Ordena a Matriz Diagonal Dominante
         for i in range(self.TAM) :
-            self.quickSort_2linhas(i, i, self.TAM - 1)
+            self.matriz_sort_linha(i)
+
+        if not continuar:
+            self.resultado_k = [float("NaN")] * self.TAM
+            return
 
         # Itera enquanto estiver fora da margem de erro e menor que a qnt max
         while (continuar and self.it_atual < self.it_max):
@@ -355,6 +363,9 @@ class Sistema :
 
             # Verifica se o valor esta dentro da margem de erro
             for i in range(self.TAM) :
+                if math.isnan(resultado_k1[i]) or math.isinf(resultado_k1[i]):
+                    self.resultado_k = [float("NaN")] * self.TAM
+                    return 0
                 if self.modulo(self.resultado_k[i] - resultado_k1[i]) < self.norm_n(self.E_tol):
                     continuar = False
 
